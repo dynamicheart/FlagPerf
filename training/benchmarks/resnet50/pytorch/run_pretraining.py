@@ -44,6 +44,7 @@ def main() -> Tuple[Any, Any]:
     config.distributed = dist_pytorch.get_world_size() > 1
     # logger
     logger = model_driver.logger
+    return
 
     train_dataset = build_train_dataset(config)
     eval_dataset = build_eval_dataset(config)
@@ -110,27 +111,29 @@ def main() -> Tuple[Any, Any]:
 
 if __name__ == "__main__":
     start = time.time()
-    config_update, state = main()
+    # config_update, state = main()
+    main()
     if not dist_pytorch.is_main_process():
         sys.exit(0)
 
     # 训练信息写日志
     e2e_time = time.time() - start
-    if config_update.do_train:
+    # if config_update.do_train:
 
-        finished_info = {
-            "e2e_time": e2e_time,
-            "train_time": state.traintime,
-            "train_no_eval_time": state.noevaltime,
-            "pure_training_computing_time": state.purecomputetime,
-            "throughput(ips)_raw": state.num_trained_samples / state.traintime,
-            "throughput(ips)_no_eval":
-            state.num_trained_samples / state.noevaltime,
-            "throughput(ips)_pure_compute":
-            state.num_trained_samples / state.purecomputetime,
-            "converged": state.converged,
-            "final_acc1": state.acc1,
-        }
-    else:
-        finished_info = {"e2e_time": e2e_time}
+    #     finished_info = {
+    #         "e2e_time": e2e_time,
+    #         "train_time": state.traintime,
+    #         "train_no_eval_time": state.noevaltime,
+    #         "pure_training_computing_time": state.purecomputetime,
+    #         "throughput(ips)_raw": state.num_trained_samples / state.traintime,
+    #         "throughput(ips)_no_eval":
+    #         state.num_trained_samples / state.noevaltime,
+    #         "throughput(ips)_pure_compute":
+    #         state.num_trained_samples / state.purecomputetime,
+    #         "converged": state.converged,
+    #         "final_acc1": state.acc1,
+    #     }
+    # else:
+    #     finished_info = {"e2e_time": e2e_time}
+    finished_info = {"e2e_time": e2e_time}
     logger.log(Event.FINISHED, message=finished_info, stacklevel=0)
